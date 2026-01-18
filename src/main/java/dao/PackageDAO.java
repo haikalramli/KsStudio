@@ -96,10 +96,11 @@ public class PackageDAO {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
             
-            // Insert into package table
+            // Ensure table name is 'package' and using the generic RETURN_GENERATED_KEYS
             String sql1 = "INSERT INTO package (pkgname, pkgprice, pkgcateg, pkgduration, eventtype, pkgdesc, createdby) " +
-                         "VALUES (?, ?, 'Indoor', ?, ?, ?, ?)";
-            PreparedStatement ps1 = conn.prepareStatement(sql1, new String[]{"PKGID"});
+                          "VALUES (?, ?, 'Indoor', ?, ?, ?, ?)";
+            PreparedStatement ps1 = conn.prepareStatement(sql1, java.sql.Statement.RETURN_GENERATED_KEYS);
+            
             ps1.setString(1, pkg.getPkgName());
             ps1.setDouble(2, pkg.getPkgPrice());
             ps1.setDouble(3, pkg.getPkgDuration());
@@ -108,14 +109,13 @@ public class PackageDAO {
             ps1.setInt(6, pkg.getCreatedBy());
             ps1.executeUpdate();
             
-            // Get generated ID
+            // FIX: Get generated ID by index 1 instead of string "PKGID"
             ResultSet rs = ps1.getGeneratedKeys();
             int pkgId = 0;
             if (rs.next()) {
-                pkgId = rs.getInt(1);
+                pkgId = rs.getInt(1); 
             }
             
-            // Insert into indoor table
             String sql2 = "INSERT INTO indoor (pkgid, numofpax, backgtype) VALUES (?, ?, ?)";
             PreparedStatement ps2 = conn.prepareStatement(sql2);
             ps2.setInt(1, pkgId);
@@ -143,10 +143,10 @@ public class PackageDAO {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false);
             
-            // Insert into package table
             String sql1 = "INSERT INTO package (pkgname, pkgprice, pkgcateg, pkgduration, eventtype, pkgdesc, createdby) " +
-                         "VALUES (?, ?, 'Outdoor', ?, ?, ?, ?)";
-            PreparedStatement ps1 = conn.prepareStatement(sql1, new String[]{"PKGID"});
+                          "VALUES (?, ?, 'Outdoor', ?, ?, ?, ?)";
+            PreparedStatement ps1 = conn.prepareStatement(sql1, java.sql.Statement.RETURN_GENERATED_KEYS);
+            
             ps1.setString(1, pkg.getPkgName());
             ps1.setDouble(2, pkg.getPkgPrice());
             ps1.setDouble(3, pkg.getPkgDuration());
@@ -155,14 +155,13 @@ public class PackageDAO {
             ps1.setInt(6, pkg.getCreatedBy());
             ps1.executeUpdate();
             
-            // Get generated ID
+            // FIX: Get generated ID by index 1
             ResultSet rs = ps1.getGeneratedKeys();
             int pkgId = 0;
             if (rs.next()) {
                 pkgId = rs.getInt(1);
             }
             
-            // Insert into outdoor table
             String sql2 = "INSERT INTO outdoor (pkgid, distance, distancepriceperkm, location) VALUES (?, ?, ?, ?)";
             PreparedStatement ps2 = conn.prepareStatement(sql2);
             ps2.setInt(1, pkgId);
